@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_filter :signed_in_user, only: [:index, :edit, :update]
+  before_filter :signed_in_user_limit, only: [:new, :create]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: :destroy
 
@@ -42,9 +43,13 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user = User.find(params[:admin])
-    User.find(params[:id]).destroy
-    flash[:success] = "User destroyed"
+    user = User.find(params[:id])
+    if current_user == user
+      flash[:failure] = "You can't destroy you're own user!"
+    else
+      user.destroy
+      flash[:success] = "User destroyed"
+    end
     redirect_to users_path
   end
 end
@@ -64,5 +69,12 @@ private
   end
 
   def admin_user
-    redirect_to root_path unless current_user.admin?
+    redirect_to root_path unless current_user.admin? 
+  end
+
+  def signed_in_user_limit
+    case
+    when signed_in?
+      redirect_to root_path, notice: "You are already logged in!"
+    end
   end

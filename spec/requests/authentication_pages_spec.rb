@@ -9,6 +9,8 @@ describe "Authentication" do
 
     it { should have_selector("h1", text: "Sign in") }
     it { should have_selector("title", text: "Sign in") }
+    it { should_not have_link("Profile")}
+    it { should_not have_link("Settings")}
   end
 
   describe "signin" do
@@ -64,8 +66,8 @@ describe "Authentication" do
 
           describe "when signing in again" do
             before do
-              click_link "Sign out"
-              click_link "Sign in"
+              delete signout_path
+              visit signin_path
               fill_in "Email",    with: user.email
               fill_in "Password", with: user.password
               click_button "Sign in"
@@ -96,6 +98,22 @@ describe "Authentication" do
           it { should have_selector("title", text: "Sign in") }
         end
       end
+    end
+
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+
+      describe "using a 'new' action" do
+        before { get new_user_path }
+        specify { response.should redirect_to(root_path) }
+      end
+
+      describe "using a 'create' action" do
+        before { post users_path }
+        specify { response.should redirect_to(root_path) }
+      end 
+
     end
 
     describe "as wrong user" do
