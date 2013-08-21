@@ -31,6 +31,30 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+
+      describe "correct pluralization" do
+        
+        describe "with more than one micropost" do
+          it { should have_content("#{user.microposts.count} microposts") }
+        end
+        
+        describe "with one micropost" do  
+          it { should have_content("#{user.microposts.count} micropost") }
+        end
+      end
+
+      describe "pagination" do
+        before do
+          30.times { FactoryGirl.create(:micropost, user: user) }
+          visit root_path
+        end
+        it { should have_selector("div.pagination") }
+        it "should list each micropost" do
+          user.feed.paginate(page: 1).each do |feed_item|
+            page.should have_selector("li", text: feed_item.content)
+          end
+        end
+      end
     end
   end
 
