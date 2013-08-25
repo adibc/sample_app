@@ -2,7 +2,7 @@
 <%= form_for(@micropost) do |f| %>
   <%= render "shared/error_messages", object: @micropost %>
   <div class="field">
-    <%= f.text_area :content, placeholder: "Compose new micropost...", onkeyup:"updateCharsLeft()", id: "text" %>
+    <%= f.text_area :content, placeholder: "Compose new micropost...", onkeyup:"updateCharsLeft()", id: "text", maxlength: 140 %>
   </div>
   <%= f.submit "Post", class: "btn btn-large btn-primary" %>
 <% end %>
@@ -12,9 +12,8 @@
 <script>
 function updateCharsLeft()
 {
-  var textLength = document.getElementById("text").value.length;
-  var charsLeft = 140 - textLength;
-  document.getElementById("chars").innerHTML = charsLeft + " characters remaining"
-};
+var textLength = document.getElementById("text").value.length;
+var charsLeft = 140 - textLength;
+document.getElementById("chars").innerHTML = charsLeft + " characters remaining";
+}
 </script>
-
